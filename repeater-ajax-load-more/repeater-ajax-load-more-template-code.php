@@ -1,25 +1,41 @@
-<?php 
-	
-	/*
-		The code in this file is an example off the code that you would use in your template to
-		show the first X number of rows of a repeater
-		
-		I'm sure there are more elegant ways to do the JavaScript, but what's here will work
-	*/
-	
-	if (have_rows('load_more_example_repeater')) {
-		// set the id of the element to something unique
-		// this id will be needed by JS to append more content
-		$total = count(get_field('load_more_example_repeater'));
-		?>
-			<ul id="my-repeater-list-id">
-				<?php 
-					$number = 4; // the number of rows to show
+<?php
+
+			if (have_rows('reviews_product')) {
+				// set the id of the element to something unique
+				// this id will be needed by JS to append more content
+				$total = count(get_field('reviews_product'));
+				?>
+				<div id="my-repeater-list-id">
+					<?php 
+					$number = 2; // the number of rows to show
 					$count = 0; // a counter
-					while (have_rows('load_more_example_repeater')) {
+					while (have_rows('reviews_product')) {
 						the_row();
 						?>
-							<li><?php the_sub_field('sub_field'); ?></li>
+
+						<div class="comment">
+							<div class="comment_header">
+								<div class="info">
+									<div class="line">
+										<span class="label">Имя:</span>
+										<span class="text"><?php the_sub_field('review_name'); ?></span>
+									</div>
+									<div class="line">
+										<span class="label">Дата отзыва:</span>
+										<span class="text"><?php the_sub_field('review_date'); ?></span>
+									</div>
+								</div>
+								<span data-rate="<?php the_sub_field('review_rating'); ?>" class="rating rating-rev rate-<?php the_sub_field('review_rating'); ?>">
+									<span class="star"></span>
+									<span class="star"></span>
+									<span class="star"></span>
+									<span class="star"></span>
+									<span class="star"></span>
+								</span>
+							</div>
+							<div class="comment_content"><?php the_sub_field('review_text'); ?></div>
+						</div>
+
 						<?php 
 						$count++;
 						if ($count == $number) {
@@ -27,8 +43,8 @@
 							break;
 						}
 					} // end while have rows
-				?>
-			</ul>
+					?>
+				</div>
 			<!-- 
 				add a link to call the JS function to show more
 				you will need to format this link using
@@ -36,11 +52,8 @@
 				this button needs to be outside the container holding the
 				items in the repeater field
 			-->
-			<a id="my-repeater-show-more-link" href="javascript: my_repeater_show_more();"<?php 
-				if ($total < $count) {
-					?> style="display: none;"<?php 
-				}
-				?>>Show More</a>
+			<button id="my-repeater-show-more-link" onclick="my_repeater_show_more();" <?php	if ($total < $count) { ?>style="display: none;"<?php } ?>>Загрузить еще</button>
+			
 			<!-- 
 				The JS that will do the AJAX request
 			-->
@@ -64,7 +77,7 @@
 						},
 						function (json) {
 							// add content to container
-							// this ID must match the containter 
+							// this ID must match the containter
 							// you want to append content to
 							jQuery('#my-repeater-list-id').append(json['content']);
 							// update offset
@@ -76,11 +89,9 @@
 							}
 						},
 						'json'
-					);
+						);
 				}
 				
 			</script>
-		<?php 		
-	} // end if have_rows
-	
-?>
+
+		<?php } ?>
