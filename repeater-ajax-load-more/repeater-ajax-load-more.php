@@ -17,20 +17,20 @@
 	*/
 	
 	// add action for logged in users
-	add_action('wp_ajax_my_repeater_show_more', 'my_repeater_show_more');
+add_action('wp_ajax_my_repeater_show_more', 'my_repeater_show_more');
 	// add action for non logged in users
-	add_action('wp_ajax_nopriv_my_repeater_show_more', 'my_repeater_show_more');
-	
-	function my_repeater_show_more() {
+add_action('wp_ajax_nopriv_my_repeater_show_more', 'my_repeater_show_more');
+
+function my_repeater_show_more() {
 		// validate the nonce
-		if (!isset($_POST['nonce']) || !wp_verify_nonce($_POST['nonce'], 'my_repeater_field_nonce')) {
-			exit;
-		}
+	if (!isset($_POST['nonce']) || !wp_verify_nonce($_POST['nonce'], 'my_repeater_field_nonce')) {
+		exit;
+	}
 		// make sure we have the other values
-		if (!isset($_POST['post_id']) || !isset($_POST['offset'])) {
-			return;
-		}
-		$show = 4; // how many more to show
+	if (!isset($_POST['post_id']) || !isset($_POST['offset'])) {
+		return;
+	}
+		$show = 2; // how many more to show
 		$start = $_POST['offset'];
 		$end = $start+$show;
 		$post_id = $_POST['post_id'];
@@ -39,10 +39,10 @@
 		// and add the content to this string, but I find
 		// object buffers make the code easier to work with
 		ob_start();
-		if (have_rows('load_more_example_repeater', $post_id)) {
-			$total = count(get_field('load_more_example_repeater', $post_id));
+		if (have_rows('reviews_product', $post_id)) {
+			$total = count(get_field('reviews_product', $post_id));
 			$count = 0;
-			while (have_rows('load_more_example_repeater', $post_id)) {
+			while (have_rows('reviews_product', $post_id)) {
 				the_row();
 				if ($count < $start) {
 					// we have not gotten to where
@@ -51,7 +51,32 @@
 					$count++;
 					continue;
 				}
-				?><li><?php the_sub_field('sub_field'); ?></li><?php 
+				?>
+
+				<div class="comment">
+					<div class="comment_header">
+						<div class="info">
+							<div class="line">
+								<span class="label">Имя:</span>
+								<span class="text"><?php the_sub_field('review_name'); ?></span>
+							</div>
+							<div class="line">
+								<span class="label">Дата отзыва:</span>
+								<span class="text"><?php the_sub_field('review_date'); ?></span>
+							</div>
+						</div>
+						<span data-rate="<?php the_sub_field('review_rating'); ?>" class="rating rating-rev rate-<?php the_sub_field('review_rating'); ?>">
+							<span class="star"></span>
+							<span class="star"></span>
+							<span class="star"></span>
+							<span class="star"></span>
+							<span class="star"></span>
+						</span>
+					</div>
+					<div class="comment_content"><?php the_sub_field('review_text'); ?></div>
+				</div>
+
+				<?php 
 				$count++;
 				if ($count == $end) {
 					// we've shown the number, break out of loop
@@ -80,5 +105,5 @@
 		$group = json_decode($json, true);
 		acf_add_local_field_group($group);
 	} // end function load_repeater_more_example_group
-	
+
 ?>
